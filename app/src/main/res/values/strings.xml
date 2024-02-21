@@ -3,4 +3,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="login_with_google">Login with google</string>
+    <string name="add_note">Add Note</string>
+    <string name="all_the_notes_that_you_add_will_appear_here_start_writing_now">All the notes that you add will appear here. Start writing now.</string>
+    <string name="add_your_first_note">Add your first note</string>
+    <string name="write_here">Write here</string>
+    <string name="title">Title</string>
+    <string name="delete">delete</string>
+    <string name="logout">Logout</string>
+    <string name="edit_note">Edit Note</string>
 </resources>

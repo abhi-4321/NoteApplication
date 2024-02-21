@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="10dp"
+    android:layout_width="match_parent"
+    android:background="@drawable/bg"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:orientation="vertical"
+    android:paddingVertical="2dp"
+    android:layout_marginHorizontal="10dp"
+    >
+
+        <ImageView
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_delete_outline_24"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="@string/delete"/>
+
+        <ImageView
+            android:id="@+id/edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_edit_24"
+            android:layout_toStartOf="@id/delete"
+            android:layout_marginEnd="10dp"
+            android:contentDescription="@string/delete"/>
+
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:fontFamily="@font/sf_pro_display_light"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:textSize="11sp"
+            android:layout_alignParentTop="true"
+            tools:text="20 Feb 2024"
+            tools:ignore="RelativeOverlap,SmallSp" />
+
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/title"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sf_pro_display_bold"
+            android:layout_marginTop="3dp"
+            android:ellipsize="end"
+            android:maxWidth="200dp"
+            android:maxLines="1"
+            android:layout_below="@id/date"
+            android:textSize="15sp"
+            tools:text="Title of note" />
+
+        <TextView
+            android:id="@+id/content"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="5dp"
+            android:minHeight="60dp"
+            android:textSize="14sp"
+            android:layout_below="@id/title"
+            tools:text="I went travelling and exploring different cultures today.I went travelling and exploring different cultures today.." />
+
+
+</RelativeLayout>

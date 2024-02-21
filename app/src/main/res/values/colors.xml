@@ -3,8 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="splash_bg_color">#B0FCFF</color>
-    <color name="launcher_icon_background">#0096B6</color>
     <color name="gray">#FFF7F7F7</color>
     <color name="blue">#E60B30A7</color>
     <color name="light_gray">#8DF7F7F7</color>
