@@ -1,5 +1,8 @@
 package com.abhinav.notesapplication.ui
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigator
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abhinav.notesapplication.R
@@ -23,6 +28,7 @@ import com.abhinav.notesapplication.viewmodel.MainViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -111,6 +117,10 @@ class HomeFragment : Fragment(), AdapterClickListener {
     }
 
     private fun logout() {
+        if (!isNetworkAvailable(requireContext())){
+            Snackbar.make(requireContext(),binding.root,"No Internet Connection", Snackbar.ANIMATION_MODE_SLIDE).show()
+            return
+        }
         try {
             googleSignInClient?.let { client ->
                 client.signOut().addOnCompleteListener {
@@ -122,13 +132,28 @@ class HomeFragment : Fragment(), AdapterClickListener {
                         ).show()
                         sharedPreferences.saveId(PREF_LOGIN, "")
                         sharedPreferences.saveBoolean(PREF_IS_LOGGED_IN, false)
-                        findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
+                        findNavController().navigate(
+                            HomeFragmentDirections.actionHomeFragmentToLoginFragment(),
+                            NavOptions.Builder().setPopUpTo(R.id.homeFragment,true).build()
+                        )
                     }
                 }
             }
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Error: $e", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+
+        return networkCapabilities != null &&
+                (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
     }
 
     override fun onDestroyView() {

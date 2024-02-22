@@ -23,15 +23,12 @@ class MainActivity : AppCompatActivity() {
     lateinit var sharedPreferences: PreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        //Splash Screen
-        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
         val notesDao = NotesDB.getInstance(this).notesDao()
         val mainViewModelFactory = MainViewModelFactory(notesDao)
+
         viewModel = ViewModelProvider(this, mainViewModelFactory)[MainViewModel::class.java]
-        splashScreen.setKeepOnScreenCondition { viewModel.isLoading.value }
         sharedPreferences = PreferenceManager(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -50,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         //Back Press Handler
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (navController.popBackStack().not())
+                if (navController.navigateUp().not())
                     finish()
             }
         }
