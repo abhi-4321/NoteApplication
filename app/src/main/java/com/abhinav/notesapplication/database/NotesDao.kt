@@ -2,8 +2,11 @@ package com.abhinav.notesapplication.database
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
+import androidx.room.Upsert
 import com.abhinav.notesapplication.model.Note
 import com.abhinav.notesapplication.model.User
 import kotlinx.coroutines.flow.Flow
@@ -17,18 +20,20 @@ interface NotesDao {
     @Update
     suspend fun updateNote(note: Note)
 
-    @Insert
-    suspend fun insertUser(user: User)
+    @Upsert
+    suspend fun upsertUser(user: User)
 
     @Query("Select * from notes " +
-            "where id=:id")
-    fun getNoteById(id: Int) : Flow<Note>
+            "where id=:id and userId=:uId")
+    fun getNoteById(id: Int, uId: String) : Flow<Note>
 
     @Query("Delete from notes " +
-            "where id=:id")
-    suspend fun deleteNote(id: Int)
+            "where id=:id and userId=:uId")
+    suspend fun deleteNote(id: Int, uId: String)
 
-    @Query("Select * from notes")
-    fun getNotes() : Flow<List<Note>>
+    @Transaction
+    @Query("Select * from notes " +
+            "where userId=:uId")
+    fun getNotes(uId: String) : Flow<List<Note>>
 
 }

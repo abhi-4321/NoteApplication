@@ -8,13 +8,13 @@ import androidx.room.PrimaryKey
 data class Note(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    val userId: Int,
+    val userId: String,
     val title: String,
     val content: String,
     val date: String
 )
 {
     companion object {
-        fun emptyNote() : Note = Note(-1,-1,"","","")
+        fun emptyNote() : Note = Note(-1,"","","","")
     }
 }

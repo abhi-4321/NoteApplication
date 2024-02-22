@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 
 private const val MY_PREFERENCES = "myPreferences"
 const val PREF_LOGIN = "loggedInUser"
-const val PREF_LOGGED_IN = "isLoggedIn"
+const val PREF_IS_LOGGED_IN = "isLoggedIn"
 class PreferenceManager(context: Context) {
     private val sharedPref: SharedPreferences = context.getSharedPreferences(MY_PREFERENCES, Context.MODE_PRIVATE)
     private val editor: SharedPreferences.Editor = sharedPref.edit()
@@ -17,12 +17,12 @@ class PreferenceManager(context: Context) {
         editor.apply()
     }
 
-    fun getInt(key: String, defaultValue: Int = 0): Int {
-        return sharedPref.getInt(key, defaultValue)
+    fun getId(key: String, defaultValue: String = ""): String {
+        return sharedPref.getString(key, defaultValue)!!
     }
 
-    fun saveInt(key: String, value: Int) {
-        editor.putInt(key,value)
+    fun saveId(key: String, value: String) {
+        editor.putString(key,value)
         editor.apply()
     }
 }

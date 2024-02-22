@@ -29,9 +29,9 @@ class MainViewModel(private val notesDao: NotesDao) : ViewModel() {
     }
 
     //Room Operations
-    fun insertUser(user: User) {
+    fun upsertUser(user: User) {
         viewModelScope.launch(Dispatchers.IO) {
-            notesDao.insertUser(user)
+            notesDao.upsertUser(user)
         }
     }
     fun updateNote(note: Note) {
@@ -44,12 +44,12 @@ class MainViewModel(private val notesDao: NotesDao) : ViewModel() {
             notesDao.insertNote(note)
         }
     }
-    fun deleteNote(id: Int) {
+    fun deleteNote(id: Int, uId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            notesDao.deleteNote(id)
+            notesDao.deleteNote(id, uId)
         }
     }
-    fun getNoteById(id: Int) : StateFlow<Note> = notesDao.getNoteById(id).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Note.emptyNote())
-    fun getNotes() : StateFlow<List<Note>> = notesDao.getNotes().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    fun getNoteById(id: Int, uId: String) : StateFlow<Note> = notesDao.getNoteById(id, uId).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Note.emptyNote())
+    fun getNotes(uId: String) : StateFlow<List<Note>> = notesDao.getNotes(uId).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
 }

@@ -7,21 +7,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.HomeFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBar"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        >
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolBar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:title="@string/app_name"
-            app:titleTextColor="@color/white"
-            app:menu="@menu/home_menu"
-            app:titleTextAppearance="@style/ToolbarTextAppearance"
-            />
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_alignParentTop="true"
+        android:background="@color/primary">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:fontFamily="@font/sf_pro_display_semibold"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/baseline_logout_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -69,7 +85,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
-        android:layout_below="@id/appBar"
+        android:layout_below="@id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/note"
@@ -84,11 +100,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:outlineProvider="none"
+        android:contentDescription="@string/add_your_first_note"
         app:backgroundTint="@color/primary"
         app:icon="@drawable/baseline_add_24"
-        app:iconTint="@color/white"
-        android:contentDescription="@string/add_your_first_note"
-        />
+        app:iconTint="@color/white" />
 
 </RelativeLayout>

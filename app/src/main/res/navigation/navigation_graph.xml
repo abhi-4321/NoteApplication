@@ -3,8 +3,8 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/homeFragment"
-    android:id="@+id/navigation_graph">
+    android:id="@+id/navigation_graph"
+    tools:ignore="InvalidNavigation">
 
     <fragment
         android:id="@+id/loginFragment"

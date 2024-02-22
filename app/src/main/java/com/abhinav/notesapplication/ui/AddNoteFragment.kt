@@ -26,10 +26,13 @@ class AddNoteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddNoteBinding.inflate(layoutInflater,container,false)
-        viewModel = (requireActivity() as MainActivity).viewModel
+        binding.tvTitle.requestFocus()
 
-        val sharedPreferences = PreferenceManager(requireContext())
-        val userId = sharedPreferences.getInt(PREF_LOGIN)
+        val activity = requireActivity() as MainActivity
+        viewModel = activity.viewModel
+
+        val sharedPreferences = activity.sharedPreferences
+        val userId = sharedPreferences.getId(PREF_LOGIN)
 
         val date = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(System.currentTimeMillis()).toString()
         binding.date.text = date.substring(0,2)

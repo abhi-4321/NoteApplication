@@ -1,16 +1,12 @@
 package com.abhinav.notesapplication.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -18,32 +14,51 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abhinav.notesapplication.R
 import com.abhinav.notesapplication.databinding.FragmentHomeBinding
-import com.abhinav.notesapplication.util.NotesListAdapter
 import com.abhinav.notesapplication.util.AdapterClickListener
-import com.abhinav.notesapplication.util.PREF_LOGGED_IN
+import com.abhinav.notesapplication.util.NotesListAdapter
+import com.abhinav.notesapplication.util.PREF_IS_LOGGED_IN
 import com.abhinav.notesapplication.util.PREF_LOGIN
 import com.abhinav.notesapplication.util.PreferenceManager
 import com.abhinav.notesapplication.viewmodel.MainViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
+private const val LOGOUT = "Log out"
+private const val DELETE = "Delete"
 
 class HomeFragment : Fragment(), AdapterClickListener {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: MainViewModel
+    private var googleSignInClient: GoogleSignInClient? = null
+    private lateinit var sharedPreferences: PreferenceManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(layoutInflater,container,false)
+        _binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
+
+        val activity = (requireActivity() as MainActivity)
+        viewModel = activity.viewModel
+        sharedPreferences = activity.sharedPreferences
+
+        //Google Sign-in Client
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
 
         binding.btn.setOnClickListener { findNavController().navigate(R.id.action_homeFragment_to_addNoteFragment) }
         binding.addNote.setOnClickListener { findNavController().navigate(R.id.action_homeFragment_to_addNoteFragment) }
+        binding.logout.setOnClickListener { showDialog(LOGOUT, "Do you want to logout?", -1) }
 
-        viewModel = (requireActivity() as MainActivity).viewModel
-
+        //Notes List Recycler View
         val listAdapter = NotesListAdapter(this)
 
         binding.recycler.apply {
@@ -53,53 +68,66 @@ class HomeFragment : Fragment(), AdapterClickListener {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.getNotes().collectLatest { notesList ->
-                    setLayout(notesList.isEmpty())
-                    listAdapter.submitList(notesList)
-                }
+                viewModel.getNotes(sharedPreferences.getId(PREF_LOGIN))
+                    .collectLatest { notesList ->
+                        listAdapter.submitList(notesList)
+                        delay(500)
+                        setLayout(notesList.isEmpty())
+                    }
             }
         }
 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val menuHost : MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider{
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.home_menu,menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                Toast.makeText(requireContext(),"Huihui",Toast.LENGTH_SHORT).show()
-                return when(menuItem.itemId) {
-                    R.id.logout -> {
-                        Toast.makeText(requireContext(),"Hui",Toast.LENGTH_SHORT).show()
-                        true
-                    }
-                    else -> false
-                }
-            }
-        })
-    }
-
-    private fun logout() {
-        val sharedPreferences = PreferenceManager(requireContext())
-        sharedPreferences.saveInt(PREF_LOGIN,-1)
-        sharedPreferences.saveBoolean(PREF_LOGGED_IN,false)
-        findNavController().navigate(R.id.action_homeFragment_to_addNoteFragment)
-    }
-
     private fun setLayout(flag: Boolean) {
         if (flag) {
             binding.linearLayout.visibility = View.VISIBLE
             binding.recycler.visibility = View.GONE
-        }
-        else {
+        } else {
             binding.recycler.visibility = View.VISIBLE
             binding.linearLayout.visibility = View.GONE
+        }
+    }
+
+    private fun showDialog(title: String, message: String, id: Int) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle(title)
+        builder.setMessage(message)
+        builder.setPositiveButton("Yes") { dialog, _ ->
+            if (title.equals(LOGOUT, false))
+                logout()
+            else if (title.equals(DELETE, false))
+                viewModel.deleteNote(id, sharedPreferences.getId(PREF_LOGIN))
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton("No") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    private fun logout() {
+        try {
+            googleSignInClient?.let { client ->
+                client.signOut().addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Logged out successfully!!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        sharedPreferences.saveId(PREF_LOGIN, "")
+                        sharedPreferences.saveBoolean(PREF_IS_LOGGED_IN, false)
+                        findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Error: $e", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -109,7 +137,7 @@ class HomeFragment : Fragment(), AdapterClickListener {
     }
 
     override fun onDeleteClick(id: Int) {
-        viewModel.deleteNote(id)
+        showDialog(DELETE, "Do you want to delete the selected note?", id)
     }
 
     override fun onEditClick(id: Int) {

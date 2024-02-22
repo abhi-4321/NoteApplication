@@ -13,8 +13,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.abhinav.notesapplication.databinding.FragmentEditNoteBinding
 import com.abhinav.notesapplication.model.Note
+import com.abhinav.notesapplication.model.Note.Companion.emptyNote
 import com.abhinav.notesapplication.util.PREF_LOGIN
-import com.abhinav.notesapplication.util.PreferenceManager
 import com.abhinav.notesapplication.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -30,14 +30,23 @@ class EditNoteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentEditNoteBinding.inflate(layoutInflater,container,false)
-        viewModel = (requireActivity() as MainActivity).viewModel
+        binding.tvTitle.requestFocus()
 
+        val activity = requireActivity() as MainActivity
+        viewModel = activity.viewModel
+        val sharedPreferences = activity.sharedPreferences
+
+        //Id from Navigation SafeArgs
         val id = arguments?.getInt("arg",-1) ?: -1
-        Log.e("IdEditNote","$id")
+
+        var oldNote: Note? = null
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.getNoteById(id).collectLatest { note ->
+                viewModel.getNoteById(id,sharedPreferences.getId(PREF_LOGIN)).collectLatest { note ->
+                    if (oldNote == null && note != emptyNote())
+                        oldNote = note.copy()
+                    //emptyNote() has id = (-1)
                     if (note.id != -1){
                         binding.date.text = note.date.substring(0,2)
                         binding.monthYear.text = note.date.substring(3)
@@ -64,10 +73,15 @@ class EditNoteFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val sharedPreferences = PreferenceManager(requireContext())
-            val userId = sharedPreferences.getInt(PREF_LOGIN)
+            val userId = sharedPreferences.getId(PREF_LOGIN)
+            val newNote = Note(id,userId,title,content,"$date $monthYear")
 
-            viewModel.updateNote(Note(id,userId,title,content,"$date $monthYear"))
+            if (newNote == oldNote){
+                Toast.makeText(requireContext(),"Current note is same as previous note", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            viewModel.updateNote(newNote)
             Toast.makeText(requireContext(),"Note updated successfully", Toast.LENGTH_SHORT).show()
             findNavController().navigateUp()
         }
