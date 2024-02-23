@@ -17,17 +17,6 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(private val notesDao: NotesDao) : ViewModel() {
 
-    //Splash Screen
-    private val mutableStateFlow = MutableStateFlow(true)
-    val isLoading = mutableStateFlow.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            delay(1000)
-            mutableStateFlow.value = false
-        }
-    }
-
     //Room Operations
     fun upsertUser(user: User) {
         viewModelScope.launch(Dispatchers.IO) {
