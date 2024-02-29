@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.abhinav.notesapplication.databinding.NoteBinding
-import com.abhinav.notesapplication.model.Note
+import com.abhinav.notesapplication.model.note.Note
 
 class NotesListAdapter(private val adapterClickListener: AdapterClickListener) : ListAdapter<Note, NotesListAdapter.ViewHolder>(DiffUtilCallback()) {
 

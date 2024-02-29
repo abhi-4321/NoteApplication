@@ -7,14 +7,14 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
-import com.abhinav.notesapplication.model.Note
+import com.abhinav.notesapplication.model.note.Note
 import com.abhinav.notesapplication.model.User
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NotesDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertNote(note: Note)
 
     @Update

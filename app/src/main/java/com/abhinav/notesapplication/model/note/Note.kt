@@ -1,7 +1,6 @@
-package com.abhinav.notesapplication.model
+package com.abhinav.notesapplication.model.note
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "notes")
